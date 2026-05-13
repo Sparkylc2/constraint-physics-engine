@@ -4,7 +4,8 @@ namespace PhysicsEngine {
 Quaternion Quaternion::from_axis_angle(float ax, float ay, float az,
                                        float angle) {
 
-    float norm = MathUtils::NORM(ax, ay, az) + 1e-12;
+    const float norm = MathUtils::NORM(ax, ay, az);
+    assert(norm > 1e-10 && "zero norm");
 
     ax /= norm;
     ay /= norm;
