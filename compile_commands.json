@@ -1,0 +1,19 @@
+[
+  {
+    "file": "src/main.cpp",
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Wextra",
+      "-std=c++17",
+      "-I/opt/homebrew/include",
+      "-Iinclude",
+      "-c",
+      "src/main.cpp",
+      "-o",
+      "build/main.o"
+    ],
+    "directory": "/Users/lukascampbell/Documents/GitHub/constraint-physics-engine",
+    "output": "build/main.o"
+  }
+]
