@@ -1,0 +1,35 @@
+#include "shape.h"
+
+namespace PhysicsEngine {
+
+Shape Shape::make_box(float hx, float hy, float hz) {
+    Shape s;
+    s.type = ShapeType::box;
+    s.box = {make_vec3(hz, hy, hz)};
+    return s;
+}
+
+Shape Shape::make_sphere(float radius) {
+    Shape s;
+    s.type = ShapeType::sphere;
+    s.sphere = {radius};
+    return s;
+}
+
+Mat<3, 3> Shape::compute_inertia(float mass) const {
+    switch (this->type) {
+    case ShapeType::box:
+        const float coeff = mass / 12.0f;
+        const Vec3 dims = this->box.half_extents * 2;
+        const float x2 = vx(dims) * vx(dims);
+        const float y2 = vy(dims) * vy(dims);
+
+        const float y2 = vy(dims) * vy(dims);
+    case ShapeType::sphere:
+    }
+    // TODO: returns the body-space inertia tensor
+    assert(false && "todo");
+    return Mat<3, 3>::identity();
+}
+
+} // namespace PhysicsEngine

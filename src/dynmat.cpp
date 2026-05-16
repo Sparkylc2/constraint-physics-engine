@@ -21,10 +21,8 @@ DynMat DynMat::operator+(const DynMat &rhs) const {
     assert(this->rows() == rhs.rows() && this->cols() == rhs.cols() &&
            "matrices must be the same size");
     DynMat res = {this->rows(), this->cols()};
-    for (std::size_t i = 0; i < this->rows(); i++) {
-        for (std::size_t j = 0; j < this->cols(); j++) {
-            res(i, j) = (*this)(i, j) + rhs(i, j);
-        }
+    for (std::size_t i = 0; i < this->rows() * this->cols(); i++) {
+        res.data_[i] = this->data_[i] + rhs.data_[i];
     }
     return res;
 }
@@ -33,20 +31,16 @@ DynMat DynMat::operator-(const DynMat &rhs) const {
     assert(this->rows() == rhs.rows() && this->cols() == rhs.cols() &&
            "matrices must be the same size");
     DynMat res = {this->rows(), this->cols()};
-    for (std::size_t i = 0; i < this->rows(); i++) {
-        for (std::size_t j = 0; j < this->cols(); j++) {
-            res(i, j) = (*this)(i, j) - rhs(i, j);
-        }
+    for (std::size_t i = 0; i < this->rows() * this->cols(); i++) {
+        res.data_[i] = this->data_[i] - rhs.data_[i];
     }
     return res;
 }
 
 DynMat DynMat::operator*(const float scalar) const {
     DynMat res = {this->rows(), this->cols()};
-    for (std::size_t i = 0; i < this->rows(); i++) {
-        for (std::size_t j = 0; j < this->cols(); j++) {
-            res(i, j) = (*this)(i, j) * scalar;
-        }
+    for (std::size_t i = 0; i < this->rows() * this->cols(); i++) {
+        res.data_[i] = this->data_[i] * scalar;
     }
     return res;
 }
@@ -63,6 +57,36 @@ DynMat DynMat::operator*(const DynMat &rhs) const {
         }
     }
     return res;
+}
+
+DynMat &DynMat::operator+=(const DynMat &rhs) {
+    assert(this->rows() == rhs.rows() && this->cols() == rhs.cols() &&
+           "matrices must be the same size");
+
+    for (std::size_t i = 0; i < this->rows() * this->cols(); i++) {
+        this->data_[i] += rhs.data_[i];
+    }
+
+    return *this;
+}
+
+DynMat &DynMat::operator-=(const DynMat &rhs) {
+    assert(this->rows() == rhs.rows() && this->cols() == rhs.cols() &&
+           "matrices must be the same size");
+
+    for (std::size_t i = 0; i < this->rows() * this->cols(); i++) {
+        this->data_[i] -= rhs.data_[i];
+    }
+
+    return *this;
+}
+
+DynMat &DynMat::operator*=(float scalar) {
+    for (std::size_t i = 0; i < this->rows() * this->cols(); i++) {
+        this->data_[i] *= scalar;
+    }
+
+    return *this;
 }
 
 DynMat DynMat::transpose() const {
@@ -99,7 +123,7 @@ void DynMat::set_block(std::size_t row, std::size_t col, const DynMat &block) {
 DynMat DynMat::get_block(std::size_t row, std::size_t col, std::size_t rows,
                          std::size_t cols) const {
     assert(row + rows <= this->rows() && col + cols <= this->cols() &&
-           "attempint to retrieve block out of bounds");
+           "attempting to retrieve block out of bounds");
 
     DynMat res = {rows, cols};
     for (std::size_t i = 0; i < rows; i++) {

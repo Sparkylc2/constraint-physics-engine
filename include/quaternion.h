@@ -1,5 +1,6 @@
 #pragma once
 #include "headers.h"
+#include "mat.h"
 
 namespace PhysicsEngine {
 
@@ -15,6 +16,9 @@ struct Quaternion {
                                                  float angle);
 
     Quaternion operator*(const Quaternion &rhs) const;
+
+    Mat<3, 3> rotation_matrix() const;
+
     Quaternion conjugate() const;
     Quaternion normalised() const;
     void NORMALISE();

@@ -16,6 +16,10 @@ template <std::size_t R, std::size_t C> struct Mat {
     Mat<R, C> operator*(float scalar) const;
     template <std::size_t C2> Mat<R, C2> operator*(const Mat<C, C2> &rhs) const;
 
+    Mat<R, C> &operator+=(const Mat<R, C> &rhs);
+    Mat<R, C> &operator-=(const Mat<R, C> &rhs);
+    Mat<R, C> &operator*=(float scalar);
+
     // operations
     Mat<C, R> transpose() const;
     float trace() const;       // square only
@@ -49,10 +53,8 @@ const float &Mat<R, C>::operator()(std::size_t row, std::size_t col) const {
 template <std::size_t R, std::size_t C>
 Mat<R, C> Mat<R, C>::operator+(const Mat<R, C> &rhs) const {
     Mat<R, C> res = Mat<R, C>::zeros();
-    for (std::size_t i = 0; i < R; i++) {
-        for (std::size_t j = 0; j < C; j++) {
-            res(i, j) = (*this)(i, j) + rhs(i, j);
-        }
+    for (std::size_t i = 0; i < R * C; i++) {
+        res.data_[i] = this->data_[i] + rhs.data_[i];
     }
     return res;
 }
@@ -60,10 +62,8 @@ Mat<R, C> Mat<R, C>::operator+(const Mat<R, C> &rhs) const {
 template <std::size_t R, std::size_t C>
 Mat<R, C> Mat<R, C>::operator-(const Mat<R, C> &rhs) const {
     Mat<R, C> res = Mat<R, C>::zeros();
-    for (std::size_t i = 0; i < R; i++) {
-        for (std::size_t j = 0; j < C; j++) {
-            res(i, j) = (*this)(i, j) - rhs(i, j);
-        }
+    for (std::size_t i = 0; i < R * C; i++) {
+        res.data_[i] = this->data_[i] - rhs.data_[i];
     }
     return res;
 }
@@ -71,10 +71,8 @@ Mat<R, C> Mat<R, C>::operator-(const Mat<R, C> &rhs) const {
 template <std::size_t R, std::size_t C>
 Mat<R, C> Mat<R, C>::operator*(float scalar) const {
     Mat<R, C> res = Mat<R, C>::zeros();
-    for (std::size_t i = 0; i < R; i++) {
-        for (std::size_t j = 0; j < C; j++) {
-            res(i, j) = (*this)(i, j) * scalar;
-        }
+    for (std::size_t i = 0; i < R * C; i++) {
+        res.data_[i] = this->data_[i] * scalar;
     }
     return res;
 }
@@ -94,6 +92,33 @@ Mat<R, C2> Mat<R, C>::operator*(const Mat<C, C2> &rhs) const {
     }
 
     return res;
+}
+
+template <std::size_t R, std::size_t C>
+Mat<R, C> &Mat<R, C>::operator+=(const Mat<R, C> &rhs) {
+    for (std::size_t i = 0; i < R * C; i++) {
+        data_[i] += rhs.data_[i];
+    }
+
+    return *this;
+}
+
+template <std::size_t R, std::size_t C>
+Mat<R, C> &Mat<R, C>::operator-=(const Mat<R, C> &rhs) {
+    for (std::size_t i = 0; i < R * C; i++) {
+        data_[i] -= rhs.data_[i];
+    }
+
+    return *this;
+}
+
+template <std::size_t R, std::size_t C>
+Mat<R, C> &Mat<R, C>::operator*=(float scalar) {
+    for (std::size_t i = 0; i < R * C; i++) {
+        data_[i] *= scalar;
+    }
+
+    return *this;
 }
 
 template <std::size_t R, std::size_t C> Mat<C, R> Mat<R, C>::transpose() const {
@@ -138,7 +163,7 @@ template <std::size_t R, std::size_t C> Mat<R, C> Mat<R, C>::inverse() const {
     static_assert(R == 2 || R == 3, "inverse only implemented for 2x2 and 3x3");
 
     const float det = this->determinant();
-    assert(std::abs(det) > 1e-10 && "singular matrix");
+    assert(!MathUtils::approx_zero(det) && "singular matrix");
     const float inv_det = 1.0f / det;
 
     if constexpr (R == 2) {

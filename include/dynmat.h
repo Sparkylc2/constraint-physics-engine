@@ -25,6 +25,11 @@ struct DynMat {
     DynMat operator*(float scalar) const;
     DynMat operator*(const DynMat &rhs) const;
 
+    DynMat &operator+=(const DynMat &rhs);
+    DynMat &operator-=(const DynMat &rhs);
+    DynMat &operator*=(float scalar);
+    DynMat &operator*=(const DynMat &rhs);
+
     // oppperationsss
     DynMat transpose() const;
     void resize(std::size_t rows, std::size_t cols);
