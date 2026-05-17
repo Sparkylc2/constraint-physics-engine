@@ -32,7 +32,7 @@ ContactManifold box_plane(const RigidBody &plane, std::size_t plane_idx,
     ContactManifold contact_manifold = {plane_idx, box_idx};
     // find the contact point
     for (std::size_t i = 0; i < 8; i++) {
-        float pen = vy(b2_world_vertices[i]) - vy(b1_position);
+        float pen = vy(b2_world_vertices[i]) - plane_y;
         if (pen > 0.0f)
             continue; // no penetration
 

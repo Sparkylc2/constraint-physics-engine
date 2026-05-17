@@ -71,7 +71,7 @@ void prepare_contact_rows(const Collisions::ContactManifold &manifold,
         normal_row.lambda = 0.0f;
         normal_row.lambda_max = std::numeric_limits<float>::max();
 
-        normal_row.zeta = -(settings.beta / settings.dt) * contact.penetration;
+        normal_row.zeta = -settings.beta * contact.penetration;
 
         // add the body indices
         normal_row.body1 = manifold.body1;
