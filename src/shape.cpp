@@ -2,6 +2,21 @@
 
 namespace PhysicsEngine {
 
+void BoxShape::get_vertices(Vec3 out[8]) const {
+    const float hx = vx(half_extents);
+    const float hy = vy(half_extents);
+    const float hz = vz(half_extents);
+
+    out[0] = {-hx, -hy, hz};
+    out[1] = {hx, -hy, hz};
+    out[2] = {-hx, -hy, -hz};
+    out[3] = {hx, -hy, -hz};
+    out[4] = {-hx, hy, hz};
+    out[5] = {hx, hy, hz};
+    out[6] = {-hx, hy, -hz};
+    out[7] = {hx, hy, -hz};
+}
+
 Shape Shape::make_box(float hx, float hy, float hz) {
     Shape s;
     s.type = ShapeType::box;

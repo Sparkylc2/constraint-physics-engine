@@ -62,6 +62,14 @@ Mat<3, 3> Quaternion::rotation_matrix() const {
     };
 }
 
+Quaternion Quaternion::operator+(const Quaternion &rhs) const {
+    return {this->w + rhs.w, this->x + rhs.x, this->y + rhs.y, this->z + rhs.z};
+}
+
+Quaternion Quaternion::operator-(const Quaternion &rhs) const {
+    return {this->w - rhs.w, this->x - rhs.x, this->y - rhs.y, this->z - rhs.z};
+}
+
 Quaternion Quaternion::operator*(const Quaternion &rhs) const {
     return {
         this->w * rhs.w - this->x * rhs.x - this->y * rhs.y - this->z * rhs.z,
@@ -70,6 +78,36 @@ Quaternion Quaternion::operator*(const Quaternion &rhs) const {
         this->w * rhs.z + this->x * rhs.y - this->y * rhs.x + this->z * rhs.w,
     };
 }
+
+Quaternion Quaternion::operator*(const float scalar) const {
+    return {this->w * scalar, this->x * scalar, this->y * scalar,
+            this->z * scalar};
+}
+
+Quaternion &Quaternion::operator+=(const Quaternion &rhs) {
+    this->w += rhs.w;
+    this->x += rhs.x;
+    this->y += rhs.y;
+    this->z += rhs.z;
+    return *this;
+}
+
+Quaternion &Quaternion::operator-=(const Quaternion &rhs) {
+    this->w -= rhs.w;
+    this->x -= rhs.x;
+    this->y -= rhs.y;
+    this->z -= rhs.z;
+    return *this;
+}
+
+Quaternion &Quaternion::operator*=(const float scalar) {
+    this->w *= scalar;
+    this->x *= scalar;
+    this->y *= scalar;
+    this->z *= scalar;
+    return *this;
+}
+
 Quaternion Quaternion::conjugate() const {
     return {this->w, -this->x, -this->y, -this->z};
 }

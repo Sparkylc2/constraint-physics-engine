@@ -1,5 +1,4 @@
 #pragma once
-#include "headers.h"
 #include "mat.h"
 
 namespace PhysicsEngine {
@@ -28,7 +27,7 @@ inline Vec3 cross(const Vec3 &a, const Vec3 &b) {
 
 inline float length(const Vec3 &v) { return MathUtils::NORM(v); }
 
-inline Vec3 normalised(const Vec3 &v) {
+inline Vec3 normalise(const Vec3 &v) {
     const float len = length(v);
     assert(!MathUtils::approx_zero(len) && "normalizing zero vec");
     return v * (1.0f / len);

@@ -6,7 +6,8 @@ namespace PhysicsEngine {
 enum class ShapeType { box, sphere };
 
 struct BoxShape {
-    Vec3 half_extents; // half-widths along local xyz
+    Vec3 half_extents;                    // half-widths along local xyz
+    void get_vertices(Vec3 out[8]) const; // gets local box vertices
 };
 
 struct SphereShape {

@@ -23,22 +23,31 @@ Mat<3, 3> RigidBody::rotation_matrix() const {
 }
 
 void RigidBody::update_inertia() {
-    // TODO: computes world-space inverse inertia from body-space version
+    // computes world-space inverse inertia from body-space version
     // I^-1_world = R * I^-1_body * R_transpose
     // where R = rotation_matrix()
     //
     // for static bodies this should stay zero
-
-    assert(false && "todo");
+    Mat<3, 3> rotation_matrix = this->rotation_matrix();
+    this->inv_inertia_world =
+        rotation_matrix * this->inv_inertia_body * rotation_matrix.transpose();
 }
 
 void RigidBody::integrate_position(float dt) {
-    // TODO: equations 36 and 37 from paper (or maybe rk4 or rk2)
+
+    // (eq 36 and 37 from paper)
+    // basically just symplectic euler
+    // x2 = x1 + dt * v1
+    // q2 = q1 + dt/2.0f q1 * omega2
     //
-    // quaternion update uses quaternion mult. renormalise the quaternion after
-    //
+    // omega2 (w) is a quaternion with 0 real part
+
+    Quaternion w_quat = {0.0f, vx(this->angular_velocity),
+                         vy(this->angular_velocity),
+                         vz(this->angular_velocity)};
+
     this->position += this->linear_velocity * dt;
-    // assert(false && "todo");
+    this->orientation += (w_quat * this->orientation) * (dt / 2.0f);
 }
 
 RigidBody RigidBody::create_dynamic(const Shape &shape, float mass,

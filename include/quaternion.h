@@ -1,5 +1,4 @@
 #pragma once
-#include "headers.h"
 #include "mat.h"
 
 namespace PhysicsEngine {
@@ -15,7 +14,14 @@ struct Quaternion {
     static Quaternion from_normalised_axis_angle(float ax, float ay, float az,
                                                  float angle);
 
+    Quaternion operator+(const Quaternion &rhs) const;
+    Quaternion operator-(const Quaternion &rhs) const;
     Quaternion operator*(const Quaternion &rhs) const;
+    Quaternion operator*(const float scalar) const;
+
+    Quaternion &operator+=(const Quaternion &rhs);
+    Quaternion &operator-=(const Quaternion &rhs);
+    Quaternion &operator*=(const float scalar);
 
     Mat<3, 3> rotation_matrix() const;
 
