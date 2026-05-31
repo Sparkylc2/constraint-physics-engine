@@ -13,7 +13,7 @@ struct mtx {
     }
 
   public:
-    template <std::size_t R, std::size_t C> static Mat<R, C> generate_randn() {
+    template <std::size_t R, std::size_t C> static Mat<R, C> randn() {
         Mat<R, C> out;
         float numel = out.rows() * out.cols();
         float stdev = 1.0f / std::sqrt(numel);
@@ -30,7 +30,7 @@ struct mtx {
         return out;
     }
 
-    static DynMat generate_randn(std::size_t rows, std::size_t cols) {
+    static DynMat randn(std::size_t rows, std::size_t cols) {
         DynMat out(rows, cols);
         float numel = out.rows() * out.cols();
         float stdev = 1.0f / std::sqrt(numel);
