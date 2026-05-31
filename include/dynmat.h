@@ -34,6 +34,10 @@ struct DynMat {
     DynMat transpose() const;
     void resize(std::size_t rows, std::size_t cols);
     void zero_fill();
+    DynMat multiply_elementwise(const DynMat &rhs) const;
+    DynMat square() const;
+    DynMat
+    apply_function(const std::function<float(const float &)> function) const;
 
     // more block ops - these are the important ones for assembly
     template <std::size_t R, std::size_t C>
@@ -45,6 +49,10 @@ struct DynMat {
     // static
     static DynMat zeros(std::size_t rows, std::size_t cols);
     static DynMat identity(std::size_t n);
+
+    // print
+    void print_shape() const;
+    void print() const;
 };
 
 template <std::size_t R, std::size_t C>

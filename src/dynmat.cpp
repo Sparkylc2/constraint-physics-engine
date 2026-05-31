@@ -108,6 +108,30 @@ void DynMat::resize(std::size_t rows, std::size_t cols) {
 
 void DynMat::zero_fill() { std::fill(data_.begin(), data_.end(), 0.0f); }
 
+DynMat DynMat::multiply_elementwise(const DynMat &rhs) const {
+    assert(this->rows() == rhs.rows() && this->cols() == rhs.cols() &&
+           "ensure matrices have the same size");
+    DynMat out(this->rows(), this->cols());
+    for (std::size_t i = 0; i < this->rows(); i++) {
+        for (std::size_t j = 0; j < this->cols(); j++) {
+            out(i, j) = rhs(i, j) * (*this)(i, j);
+        }
+    }
+    return out;
+}
+
+DynMat DynMat::square() const { return this->multiply_elementwise(*this); }
+DynMat DynMat::apply_function(
+    const std::function<float(const float &)> function) const {
+    DynMat out(this->rows(), this->cols());
+    for (std::size_t i = 0; i < this->rows(); i++) {
+        for (std::size_t j = 0; j < this->cols(); j++) {
+            out(i, j) = function((*this)(i, j));
+        }
+    }
+    return out;
+}
+
 void DynMat::set_block(std::size_t row, std::size_t col, const DynMat &block) {
     assert(row + block.rows() <= this->rows() &&
            col + block.cols() <= this->cols() &&
@@ -145,5 +169,18 @@ DynMat DynMat::identity(std::size_t n) {
     }
     return identity;
 };
+
+void DynMat::print_shape() const {
+    std::cout << "Matrix Size([" << rows_ << ", " << cols_ << "])" << std::endl;
+}
+void DynMat::print() const {
+    for (std::size_t row = 0; row < this->rows_; row++) {
+        for (std::size_t col = 0; col < this->cols_; col++) {
+            std::cout << (*this)(row, col) << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
 
 } // namespace PhysicsEngine

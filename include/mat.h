@@ -25,6 +25,10 @@ template <std::size_t R, std::size_t C> struct Mat {
     float trace() const;       // square only
     float determinant() const; // up to 3x3
     Mat<R, C> inverse() const; // up to 3x3 again
+    Mat<R, C> multiply_elementwise(const Mat<R, C> &rhs) const;
+    Mat<R, C> square() const;
+    Mat<R, C>
+    apply_function(const std::function<float(const float &)> function) const;
 
     // block ops because we love russian dolls
     template <std::size_t R2, std::size_t C2>
@@ -35,6 +39,10 @@ template <std::size_t R, std::size_t C> struct Mat {
     // static constructors
     static Mat<R, C> zeros();
     static Mat<R, C> identity(); // square only obv
+
+    // print
+    void print_shape();
+    void print();
 };
 
 // the implementations
@@ -196,6 +204,32 @@ template <std::size_t R, std::size_t C> Mat<R, C> Mat<R, C>::inverse() const {
         };
     }
 }
+template <std::size_t R, std::size_t C>
+Mat<R, C> Mat<R, C>::multiply_elementwise(const Mat<R, C> &rhs) const {
+    Mat<R, C> out = Mat<R, C>::zeros();
+    for (std::size_t i = 0; i < R; i++) {
+        for (std::size_t j = 0; j < C; j++) {
+            out(i, j) = rhs(i, j) * (*this)(i, j);
+        }
+    }
+    return out;
+}
+
+template <std::size_t R, std::size_t C> Mat<R, C> Mat<R, C>::square() const {
+    return this->multiply_elementwise(*this);
+}
+
+template <std::size_t R, std::size_t C>
+Mat<R, C> Mat<R, C>::apply_function(
+    const std::function<float(const float &)> function) const {
+    Mat<R, C> out;
+    for (std::size_t i = 0; i < R; i++) {
+        for (std::size_t j = 0; j < C; j++) {
+            out(i, j) = function((*this)(i, j));
+        }
+    }
+    return out;
+}
 
 template <std::size_t R, std::size_t C>
 template <std::size_t R2, std::size_t C2>
@@ -235,4 +269,16 @@ template <std::size_t R, std::size_t C> Mat<R, C> Mat<R, C>::identity() {
     return identity;
 }
 
+template <std::size_t R, std::size_t C> void Mat<R, C>::print_shape() {
+    std::cout << "Matrix Size([" << R << ", " << C << "])" << std::endl;
+}
+template <std::size_t R, std::size_t C> void Mat<R, C>::print() {
+    for (std::size_t i = 0; i < R; i++) {
+        for (std::size_t j = 0; j < C; j++) {
+            std::cout << (*this)(i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
 } // namespace PhysicsEngine
