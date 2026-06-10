@@ -55,12 +55,4 @@ void prepare_contact_rows(const Collisions::ContactManifold &manifold,
                           const SolverSettings &settings,
                           std::vector<ConstraintRow> &rows);
 
-// struct ContactConstraint : Constraint {
-//     Collisions::ContactManifold manifold;
-//
-//     std::size_t num_rows() const override;
-//     std::size_t prepare(ConstraintRow *out,
-//                         const std::vector<RigidBody> &bodies,
-//                         const SolverSettings &settings) override;
-// };
 } // namespace PhysicsEngine::Constraints

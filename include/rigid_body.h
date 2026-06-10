@@ -16,6 +16,9 @@ struct RigidBody {
     // --- shapess ---
     Shape shape;
 
+    // config
+    bool has_gravity = true;
+
     // --- mass shit ---
     float mass;
     float inv_mass;             // which is 0 for static/kinematic

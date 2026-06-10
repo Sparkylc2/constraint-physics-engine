@@ -52,10 +52,11 @@ void RigidBody::integrate_position(float dt) {
 
 RigidBody RigidBody::create_dynamic(const Shape &shape, float mass,
                                     const Vec3 &pos) {
-    assert(mass > 0.0f && "dynamic body needs positive mass");
+    assert(mass > 0.0f && "dynamic body needs a positive mass");
 
     RigidBody body{};
     body.shape = shape;
+
     body.position = pos;
     body.mass = mass;
     body.inv_mass = 1.0f / mass;

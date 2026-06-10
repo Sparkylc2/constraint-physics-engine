@@ -1,4 +1,6 @@
 #include "world.h"
+#include "broadphase.h"
+#include "collision.h"
 #include "constraint.h"
 
 namespace PhysicsEngine {
@@ -14,6 +16,7 @@ void World::step() {
     this->constraint_rows.clear();
 
     for (auto &body : bodies) {
+
         // zero accumulators and update inertia
         body.clear_accumulators();
         body.update_inertia();
@@ -27,16 +30,23 @@ void World::step() {
             body.inv_inertia_world * body.torque * this->settings.dt;
     }
 
-    std::vector<Collisions::ContactManifold> collision_manifolds;
-    // for now we just have the box plane collision for testing,
-    // later will loop over all the contacts detected for arbitrary shapes
-    collision_manifolds.push_back(
-        Collisions::box_plane(bodies[0], 0, bodies[1], 1));
-    // std::cout << collision_manifolds[0].num_points << std::endl;
+    // broadphase
+    std::vector<Collisions::CollisionPair> pairs =
+        Collisions::broadphase_bruteforce(this->bodies);
+
+    // narrowphase
+    std::vector<Collisions::ContactManifold> manifolds;
+    for (const auto &pair : pairs) {
+        Collisions::ContactManifold manifold =
+            Collisions::collide(this->bodies, pair.body_a, pair.body_b);
+        if (manifold.num_points > 0) {
+            manifolds.push_back(manifold);
+        }
+    }
 
     // transient so we can add directly to avoid the need to track the contact
     // constraint (if we had added it to the constraints vector)
-    for (Collisions::ContactManifold manifold : collision_manifolds) {
+    for (Collisions::ContactManifold manifold : manifolds) {
         Constraints::prepare_contact_rows(manifold, bodies, this->settings,
                                           this->constraint_rows);
     }
@@ -49,6 +59,7 @@ void World::step() {
                             this->settings);
     }
 
+    // std::cout << constraint_rows.size() << std::endl;
     // runs the PGS
     this->solver.solve(this->constraint_rows, this->bodies, this->settings);
 
@@ -58,6 +69,8 @@ void World::step() {
             continue;
 
         body.integrate_position(this->settings.dt);
+        // std::cout << vx(body.position) << ", " << vy(body.position) << ", "
+        //           << vz(body.position) << std::endl;
     }
 }
 } // namespace PhysicsEngine

@@ -27,9 +27,25 @@ int main() {
                                             make_vec3(0.0f, -0.1f, 0.0f)));
 
     // dynamic box sitting above ground
-    world.add_body(RigidBody::create_dynamic(
-        Shape::make_box(0.5f, 0.5f, 0.5f), 1.0f, make_vec3(0.0f, 3.0f, 0.0f)));
+    auto t = RigidBody::create_dynamic(Shape::make_box(0.5f, 0.5f, 0.5f), 1.0f,
+                                       make_vec3(0.0f, 3.0f, 0.0f));
+    t.has_gravity = false;
+    world.add_body(t);
+    // world.add_body(RigidBody::create_dynamic(
+    //     Shape::make_box(0.5f, 0.5f, 0.5f), 1.0f, make_vec3(0.0f, 3.0f,
+    //     0.0f)));
 
+    world.add_body(RigidBody::create_dynamic(
+        Shape::make_box(0.5f, 0.5f, 0.5f), 1.0f, make_vec3(0.0f, 2.0f, 0.0f)));
+    world.add_body(RigidBody::create_dynamic(
+        Shape::make_box(0.5f, 0.5f, 0.5f), 1.0f, make_vec3(0.0f, 1.0f, 0.0f)));
+
+    world.add_body(RigidBody::create_dynamic(Shape::make_sphere(0.5f), 1.0f,
+                                             make_vec3(1.0f, 3.0f, 0.0f)));
+    world.add_body(RigidBody::create_dynamic(Shape::make_sphere(0.5f), 1.0f,
+                                             make_vec3(-1.0f, 3.0f, 0.0f)));
+    world.add_body(RigidBody::create_dynamic(Shape::make_sphere(0.5f), 1.0f,
+                                             make_vec3(-1.0f, 4.2f, 0.0f)));
     while (!WindowShouldClose()) {
 
         // --- simulation step ---

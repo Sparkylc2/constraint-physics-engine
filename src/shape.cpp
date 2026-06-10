@@ -18,15 +18,14 @@ void BoxShape::get_vertices(Vec3 out[8]) const {
 }
 
 Shape Shape::make_box(float hx, float hy, float hz) {
-    Shape s;
+    Shape s = {ShapeType::box};
     s.type = ShapeType::box;
     s.box = {make_vec3(hx, hy, hz)};
     return s;
 }
 
 Shape Shape::make_sphere(float radius) {
-    Shape s;
-    s.type = ShapeType::sphere;
+    Shape s = {ShapeType::sphere};
     s.sphere = {radius};
     return s;
 }
@@ -50,6 +49,10 @@ Mat<3, 3> Shape::compute_inertia(float mass) const {
         const float coeff =
             mass * 2.0f / 5.0f * this->sphere.radius * this->sphere.radius;
         return {coeff, 0.0f, 0.0f, 0.0f, coeff, 0.0f, 0.0f, 0.0f, coeff};
+    }
+    case ShapeType::polygon: {
+        // TODO
+        return {1.0f, 1.0f, 1.0f};
     }
     }
     return Mat<3, 3>::identity();

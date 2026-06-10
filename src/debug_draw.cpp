@@ -1,4 +1,6 @@
 #include "debug_draw.h"
+#include "mat.h"
+#include "math_utils.h"
 #include "rlgl.h"
 
 namespace PhysicsEngineRendering {
@@ -9,8 +11,12 @@ namespace PhysicsEngineRendering {
 static Matrix build_transform(const PhysicsEngine::Quaternion &q,
                               const PhysicsEngine::Vec3 &pos, float sx,
                               float sy, float sz) {
+    PhysicsEngine::Quaternion rot_q =
+        PhysicsEngine::MathUtils::approx_equal(q.norm(), 1.0f) ? q
+                                                               : q.normalised();
+
     // standard formula
-    const float w = q.w, x = q.x, y = q.y, z = q.z;
+    const float w = rot_q.w, x = rot_q.x, y = rot_q.y, z = rot_q.z;
     const float x2 = x + x, y2 = y + y, z2 = z + z;
     const float xx = x * x2, xy = x * y2, xz = x * z2;
     const float yy = y * y2, yz = y * z2, zz = z * z2;
@@ -72,6 +78,7 @@ void DebugDraw::draw_body(const PhysicsEngine::RigidBody &body,
     switch (body.shape.type) {
     case ShapeType::box: {
         const auto &he = body.shape.box.half_extents;
+
         // scale from unit cube to full box dimensions (2 * half_extents)
         const float sx = 2.0f * he.data_[0];
         const float sy = 2.0f * he.data_[1];
@@ -82,6 +89,7 @@ void DebugDraw::draw_body(const PhysicsEngine::RigidBody &body,
 
         Model model = this->unit_cube;
         model.transform = transform;
+
         DrawModel(model, {0, 0, 0}, 1.0f, colour);
 
         // wireframe for depth

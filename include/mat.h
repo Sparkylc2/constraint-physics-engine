@@ -14,6 +14,7 @@ template <std::size_t R, std::size_t C> struct Mat {
     Mat<R, C> operator+(const Mat<R, C> &rhs) const;
     Mat<R, C> operator-(const Mat<R, C> &rhs) const;
     Mat<R, C> operator*(float scalar) const;
+    Mat<R, C> operator/(float scalar) const;
     template <std::size_t C2> Mat<R, C2> operator*(const Mat<C, C2> &rhs) const;
 
     Mat<R, C> &operator+=(const Mat<R, C> &rhs);
@@ -44,6 +45,8 @@ template <std::size_t R, std::size_t C> struct Mat {
     void print_shape();
     void print();
 };
+
+using Mat3 = Mat<3, 3>;
 
 // the implementations
 template <std::size_t R, std::size_t C>
@@ -81,6 +84,14 @@ Mat<R, C> Mat<R, C>::operator*(float scalar) const {
     Mat<R, C> res = Mat<R, C>::zeros();
     for (std::size_t i = 0; i < R * C; i++) {
         res.data_[i] = this->data_[i] * scalar;
+    }
+    return res;
+}
+template <std::size_t R, std::size_t C>
+Mat<R, C> Mat<R, C>::operator/(float scalar) const {
+    Mat<R, C> res = Mat<R, C>::zeros();
+    for (std::size_t i = 0; i < R * C; i++) {
+        res.data_[i] = this->data_[i] / scalar;
     }
     return res;
 }
