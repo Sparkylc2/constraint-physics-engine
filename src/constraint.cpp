@@ -40,7 +40,8 @@ void ConstraintRow::precompute(const std::vector<RigidBody> &bodies,
 void prepare_contact_rows(const Collisions::ContactManifold &manifold,
                           const std::vector<RigidBody> &bodies,
                           const SolverSettings &settings,
-                          std::vector<ConstraintRow> &rows) {
+                          std::vector<ConstraintRow> &rows,
+                          const PairCache *warm_cache) {
 
     // looping over the contact points, we create the constraints for each
     // contact point
@@ -68,7 +69,6 @@ void prepare_contact_rows(const Collisions::ContactManifold &manifold,
         normal_row.J2_angular = cross(contact.r2_world, contact.normal);
 
         normal_row.lambda_min = 0.0f;
-        normal_row.lambda = 0.0f;
         normal_row.lambda_max = std::numeric_limits<float>::max();
 
         normal_row.zeta = -settings.beta * contact.penetration;
@@ -136,6 +136,20 @@ void prepare_contact_rows(const Collisions::ContactManifold &manifold,
         friction_row2.lambda_min = lambda_min;
         friction_row1.lambda_max = lambda_max;
         friction_row2.lambda_max = lambda_max;
+
+        // look up cached lambdas by contact id
+        normal_row.lambda = 0.0f;
+        friction_row1.lambda = 0.0f;
+        friction_row2.lambda = 0.0f;
+
+        if (warm_cache != nullptr) {
+            CachedLambdas cached;
+            if (warm_cache->find(contact.id, cached)) {
+                normal_row.lambda = cached.lambda_normal;
+                friction_row1.lambda = cached.lambda_friction1;
+                friction_row2.lambda = cached.lambda_friction2;
+            }
+        }
 
         // once everythings computed we can add to the constraint array
         rows.push_back(normal_row);

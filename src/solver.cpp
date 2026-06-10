@@ -12,9 +12,14 @@ void Solver::solve(std::vector<Constraints::ConstraintRow> &rows,
     std::vector<Vec3> a_linear(bodies.size(), Vec3::zeros());
     std::vector<Vec3> a_angular(bodies.size(), Vec3::zeros());
 
-    // warm starting goes here later once we did some contact caching
-    for (Constraints::ConstraintRow &row : rows) {
-        row.lambda = 0.0f;
+    // Algorithm 5 warm starting
+    for (const Constraints::ConstraintRow &row : rows) {
+        if (std::abs(row.lambda) > 1e-10f) {
+            a_linear[row.body1] += row.B1_linear * row.lambda;
+            a_angular[row.body1] += row.B1_angular * row.lambda;
+            a_linear[row.body2] += row.B2_linear * row.lambda;
+            a_angular[row.body2] += row.B2_angular * row.lambda;
+        }
     }
 
     for (std::size_t iter = 0; iter < this->iterations; iter++) {
@@ -62,13 +67,12 @@ void Solver::solve(std::vector<Constraints::ConstraintRow> &rows,
     }
 
     // finally applying the velocity update as the a vectors are equivalent to
-    // our V^2 vector (or well the linear and angular components etc. yadayada)
+    // our V^2 vector (or well the linear and angular components etc.
     for (std::size_t i = 0; i < bodies.size(); i++) {
+        if (bodies[i].is_static())
+            continue;
         bodies[i].linear_velocity += a_linear[i] * settings.dt;
         bodies[i].angular_velocity += a_angular[i] * settings.dt;
     }
-
-    return;
 }
-
 } // namespace PhysicsEngine

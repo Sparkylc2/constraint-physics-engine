@@ -1,5 +1,6 @@
 #pragma once
 #include "constraint.h"
+#include "contact_cache.h"
 #include "rigid_body.h"
 #include "solver.h"
 #include "solver_settings.h"
@@ -13,6 +14,9 @@ struct World {
     // gets rebuilt each step
     std::vector<Constraints::ConstraintRow> constraint_rows;
 
+    ContactCacheMap cache_old;
+    ContactCacheMap cache_new;
+
     Solver solver;
     SolverSettings settings{};
 
@@ -23,6 +27,8 @@ struct World {
     };
 
     std::size_t add_body(const RigidBody &body);
+
+    // todo: implement
     void add_constraint(std::unique_ptr<Constraints::Constraint> constraint);
 
     void step();

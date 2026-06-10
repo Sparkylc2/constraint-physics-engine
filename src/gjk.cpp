@@ -1,4 +1,5 @@
 #include "gjk.h"
+#include "manifold_clip.h"
 #include "math_utils.h"
 
 namespace PhysicsEngine::Collisions::GJK {
@@ -555,7 +556,17 @@ Collisions::ContactManifold convex_convex(const RigidBody &a, std::size_t a_idx,
     if (depth < 1e-6f)
         return manifold;
 
-    // contact points relative to each body's center of mass
+    // phase 3: build a multi-point manifold via face clipping
+    // fixes single-contact-point rocking problem for shapes
+    // that have faces (boxes, eventually polygons with face data).
+    std::size_t clipped =
+        Collisions::clip_manifold(a, a_idx, b, b_idx, normal, depth, manifold);
+
+    if (clipped > 0)
+        return manifold;
+
+    // single EPA contact point (spheres, polygons without
+    // face data, etc)
     Vec3 r1 = epa_result.contact_a - a.position;
     Vec3 r2 = epa_result.contact_b - b.position;
 

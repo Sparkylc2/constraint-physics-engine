@@ -1,5 +1,6 @@
 #pragma once
 #include "collision.h"
+#include "contact_cache.h"
 #include "headers.h"
 #include "rigid_body.h"
 #include "solver_settings.h"
@@ -50,9 +51,11 @@ struct Constraint {
 
 // for a contact between two surfaces, transient so doesn't need its
 // own type as it's not persistent
+// warm_cache is null when no cache hit exists for this pair
 void prepare_contact_rows(const Collisions::ContactManifold &manifold,
                           const std::vector<RigidBody> &bodies,
                           const SolverSettings &settings,
-                          std::vector<ConstraintRow> &rows);
+                          std::vector<ConstraintRow> &rows,
+                          const PairCache *warm_cache = nullptr);
 
 } // namespace PhysicsEngine::Constraints

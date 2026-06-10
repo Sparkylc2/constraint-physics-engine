@@ -63,8 +63,8 @@ ContactManifold collide(const std::vector<RigidBody> bodies,
         return box_sphere(b_1, b_1_idx, b_2, b_2_idx);
     if (t_1 == ShapeType::sphere && t_2 == ShapeType::box)
         return box_sphere(b_2, b_2_idx, b_1, b_1_idx);
-    if (t_1 == ShapeType::box && t_2 == ShapeType::box)
-        return box_box(b_1, b_1_idx, b_2, b_2_idx);
+    // if (t_1 == ShapeType::box && t_2 == ShapeType::box)
+    // return box_box(b_1, b_1_idx, b_2, b_2_idx);
 
     return GJK::convex_convex(b_1, b_1_idx, b_2, b_2_idx);
 }
