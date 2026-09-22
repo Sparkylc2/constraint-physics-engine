@@ -18,6 +18,7 @@ void SceneCamera::init(Vector3 position, Vector3 target) {
     this->sensitivity = 0.003f;
     this->cursor_grabbed = false;
 
+    // compute initial yaw/pitch from position → target direction
     float dx = target.x - position.x;
     float dy = target.y - position.y;
     float dz = target.z - position.z;
@@ -44,14 +45,18 @@ void SceneCamera::update() {
 }
 
 void SceneCamera::update_fps() {
+    // grab cursor on first frame / when clicking into window
     if (!this->cursor_grabbed) {
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
             DisableCursor();
             this->cursor_grabbed = true;
         }
-        return;
+        return; // don't process input until cursor is grabbed
     }
 
+    // release cursor with Escape — note: this means Escape won't close
+    // the window while the cursor is grabbed. press Escape twice:
+    // once to release cursor, once to close.
     if (IsKeyPressed(KEY_ESCAPE)) {
         EnableCursor();
         this->cursor_grabbed = false;
@@ -60,21 +65,20 @@ void SceneCamera::update_fps() {
 
     float dt = GetFrameTime();
 
-    // mouse look
+    // --- mouse look ---
     Vector2 delta = GetMouseDelta();
     this->yaw -= delta.x * this->sensitivity;
-    this->pitch -= delta.y * this->sensitivity;
+    this->pitch -=
+        delta.y * this->sensitivity; // inverted Y: mouse up = look up
 
-    // clamps pitch
+    // clamp pitch to avoid flipping
     const float max_pitch = 1.5f; // ~86 degrees
     if (this->pitch > max_pitch)
         this->pitch = max_pitch;
     if (this->pitch < -max_pitch)
         this->pitch = -max_pitch;
 
-    // todo: move to a matrix based system
-    // with local coords and rotation/translation matrices
-    // forward/right vectors
+    // --- forward / right vectors ---
     float cos_p = std::cos(this->pitch);
     float sin_p = std::sin(this->pitch);
     float cos_y = std::cos(this->yaw);
@@ -113,13 +117,14 @@ void SceneCamera::update_fps() {
         pos.x += right.x * speed;
         pos.z += right.z * speed;
     }
-    if (IsKeyDown(KEY_SPACE)) {
+    if (IsKeyDown(KEY_Q)) {
         pos.y += speed;
     }
-    if (IsKeyDown(KEY_LEFT_CONTROL)) {
+    if (IsKeyDown(KEY_E)) {
         pos.y -= speed;
     }
 
+    // update target from position + forward
     this->camera.target = {pos.x + forward.x, pos.y + forward.y,
                            pos.z + forward.z};
 }
@@ -129,6 +134,7 @@ void SceneCamera::update_orbital() {
 }
 
 void SceneCamera::set_mode(CameraMode new_mode) {
+    // release cursor when leaving fps mode
     if (this->mode == CameraMode::fps && new_mode != CameraMode::fps) {
         if (this->cursor_grabbed) {
             EnableCursor();
@@ -144,6 +150,7 @@ void SceneCamera::disable_input() { this->input_enabled = false; }
 void SceneCamera::look_at(Vector3 target) {
     this->camera.target = target;
 
+    // recompute yaw/pitch to match
     float dx = target.x - this->camera.position.x;
     float dy = target.y - this->camera.position.y;
     float dz = target.z - this->camera.position.z;
