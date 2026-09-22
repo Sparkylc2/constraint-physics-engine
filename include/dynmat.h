@@ -8,9 +8,13 @@ struct DynMat {
     std::size_t rows_, cols_;
     std::vector<float> data_;
 
-    // this one needs a constructor
+    // constructor
     DynMat(std::size_t rows, std::size_t cols)
         : rows_(rows), cols_(cols), data_(rows * cols, 0.0f) {}
+
+    // copy constructor
+    DynMat(const DynMat &mat)
+        : rows_(mat.rows_), cols_(mat.cols_), data_(mat.data_) {}
 
     float &operator()(std::size_t row, std::size_t col);
     const float &operator()(std::size_t row, std::size_t col) const;
@@ -20,7 +24,8 @@ struct DynMat {
     std::size_t cols() const;
 
     // reinventing the wheel
-    DynMat operator+(const DynMat &rhs) const;
+    DynMat operator+(const DynMat &rhs)
+        const; // NOTE: broadcasting only implemented for + op
     DynMat operator-(const DynMat &rhs) const;
     DynMat operator*(float scalar) const;
     DynMat operator*(const DynMat &rhs) const;

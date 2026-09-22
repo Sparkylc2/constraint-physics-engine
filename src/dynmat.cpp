@@ -18,11 +18,19 @@ std::size_t DynMat::rows() const { return this->rows_; }
 std::size_t DynMat::cols() const { return this->cols_; }
 
 DynMat DynMat::operator+(const DynMat &rhs) const {
-    assert(this->rows() == rhs.rows() && this->cols() == rhs.cols() &&
-           "matrices must be the same size");
+    assert(this->rows() == rhs.rows() &&
+           "row dimensions must match for addition");
+
+    bool can_broadcast = (rhs.cols() == 1);
+    assert((this->cols() == rhs.cols() || can_broadcast) &&
+           "matrix column mistmatch and RHS is not a broadcastable vector");
     DynMat res = {this->rows(), this->cols()};
-    for (std::size_t i = 0; i < this->rows() * this->cols(); i++) {
-        res.data_[i] = this->data_[i] + rhs.data_[i];
+
+    for (std::size_t i = 0; i < this->rows(); i++) {
+        for (std::size_t j = 0; j < this->cols(); j++) {
+            std::size_t rhs_j = can_broadcast ? 0 : j;
+            res(i, j) = (*this)(i, j) + rhs(i, rhs_j);
+        }
     }
     return res;
 }
